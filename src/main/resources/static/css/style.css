@@ -1,0 +1,40 @@
+/* Custom CSS for Home Page */
+
+/* Background for the banner section */
+.banner {
+    color: #fff;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #007bff !important;
+}
+
+/* Style cho phần tìm kiếm */
+.search-filter {
+    margin-top: 30px;
+}
+
+.search-filter .form-control {
+    width: auto;
+}
+
+.card {
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Style cho phần footer */
+footer {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
+}
