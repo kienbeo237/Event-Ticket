@@ -1,54 +1,56 @@
-package com.example.eventticket.controller;
+package com.example.filmBooking.controller;
 
-import com.example.eventticket.entity.Concert;
-import com.example.eventticket.service.IConcertService;
-import lombok.AllArgsConstructor;
+import com.example.filmBooking.apis.Api;
+import com.example.filmBooking.model.Bill;
+import com.example.filmBooking.model.Cinema;
+import com.example.filmBooking.service.BillService;
+import com.example.filmBooking.service.CinemaService;
+import com.example.filmBooking.service.StatisticsService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDateTime;
+import javax.xml.crypto.Data;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping("/")
-@AllArgsConstructor
+@RequestMapping("/home")
 public class HomeController {
+    @Autowired
+    private StatisticsService statisticsService;
 
-    private final IConcertService concertService;
-
-    // Xem trang chủ
     @GetMapping
-    public String viewHomePage(Model model,
-                               @RequestParam(required = false) String keyword,
-                               @RequestParam(required = false) String location,
-                               @RequestParam(required = false) LocalDateTime startTime) {
+    public String home(Model model,
+                       @RequestParam(value = "startDate", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                       @RequestParam(value = "endDate", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate ) {
+        List<BigDecimal> thanhXuan = statisticsService.revenueInTheLast7DaysThanhXuan();
+        List<BigDecimal> mipec = statisticsService.revenueInTheLast7DaysMipec();
+        List<BigDecimal> myDinh = statisticsService.revenueInTheLast7DaysMyDinh();
+        List<Object> revenueTicket = statisticsService.revenueTicket(startDate, endDate);
+        List<Object> revenueService = statisticsService.revenueService(startDate, endDate);
 
-        List<Concert> concerts = concertService.searchConcerts(keyword, location, startTime);
-        model.addAttribute("concerts", concerts);
-        return "home";
-    }
-
-//    // Xem chi tiết sự kiện
-//    @GetMapping("/concert/{id}")
-//    public String viewConcertDetails(@PathVariable Long id, Model model) {
-//        Concert concert = concertService.getConcertById(id);
-//        model.addAttribute("concert", concert);
-//        return "concert-detail";
-//    }
-
-    // Xử lý đăng nhập/đăng ký (chuyển hướng tới trang đăng ký/đăng nhập)
-    @GetMapping("/login")
-    public String viewLoginPage() {
-        return "login";
-    }
-
-    @GetMapping("/register")
-    public String viewRegisterPage() {
-        return "register";
+        System.out.println(startDate);
+        System.out.println(endDate);
+        model.addAttribute("revenueTicket", revenueTicket);
+        model.addAttribute("revenueService", revenueService);
+        model.addAttribute("thanhXuan", thanhXuan);
+        model.addAttribute("myDinh", myDinh);
+        model.addAttribute("mipec", mipec);
+        return "admin/home";
     }
 }
-
